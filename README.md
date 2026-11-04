@@ -63,32 +63,27 @@ Chạy đầy đủ hoặc thay đổi độ dài review:
 
 ## Kết quả và phần nhận xét
 
-Sau khi hoàn tất, `outputs/` chứa:
+Kết quả lần chạy đầy đủ trên CPU (20.000 mẫu train, 5.000 validation và
+25.000 test):
 
-- `results.csv`: Accuracy, Precision, Recall, F1, validation accuracy và thời gian.
-  Precision/Recall/F1 lấy lớp positive làm lớp dương.
-- `comparison.png`: biểu đồ Accuracy và F1 của bốn mô hình.
-- `reports.json`: báo cáo từng lớp và confusion matrix (hàng = nhãn thật,
-  cột = nhãn dự đoán; thứ tự negative, positive), kèm `C` đã chọn của baseline.
-- `history.json`: train loss, validation loss và validation accuracy theo epoch.
-- `config.json`: tham số chạy, thiết bị và kích thước các split thực tế.
+| Mô hình | Accuracy | F1 | Thời gian train (giây) |
+|---|---:|---:|---:|
+| Logistic Regression | **0,8989** | **0,8990** | **0,88** |
+| SVM | 0,8958 | 0,8957 | 1,95 |
+| RNN | 0,7614 | 0,7650 | 132,23 |
+| LSTM | 0,8220 | 0,8274 | 824,10 |
 
-`train_seconds` gồm huấn luyện và đánh giá validation, bao gồm cả ba lần thử `C`
-ở baseline; không tính tải dữ liệu, tạo đặc trưng hay đánh giá test.
-Đây là thời gian của quy trình chọn mô hình trên máy chạy, không phải phép đo
-tốc độ từng epoch. Mỗi lần chạy ghi đè kết quả trong thư mục output đã chọn.
-Code không lưu trọng số sau khi kết thúc.
+Logistic Regression cho kết quả tốt nhất và nhanh nhất; SVM có chất lượng gần
+tương đương. LSTM tốt hơn RNN khoảng 6 điểm phần trăm Accuracy nhờ khả năng ghi
+nhớ phụ thuộc dài, nhưng vẫn kém các phương pháp TF-IDF khoảng 7–8 điểm và tốn
+nhiều thời gian hơn. Nguyên nhân có thể là mạng neural học embedding từ đầu và
+chỉ dùng 256 token đầu, trong khi TF-IDF unigram/bigram khai thác trực tiếp các
+cụm từ thể hiện cảm xúc.
 
-Trong báo cáo, lấy số đo thực tế từ `results.csv`, chèn `comparison.png`, rồi:
-
-1. So sánh Accuracy/F1 và thời gian của bốn mô hình trên **lần chạy đầy đủ**.
-2. Dùng loss validation để nhận xét quá khớp, dùng confusion matrix để xem lỗi hai lớp.
-3. Giải thích cơ chế cổng của LSTM so với RNN thường; đối chiếu với kết quả quan sát.
-4. Thảo luận TF-IDF n-gram, giới hạn 256 token và embedding học từ đầu.
-   LSTM không được bảo đảm thắng baseline; kết luận phải dựa trên số đo.
-
-Chưa có số đo IMDB điền sẵn. `--limit` chỉ dùng kiểm tra luồng chạy;
-không dùng kết quả mẫu nhỏ thay cho kết quả của 50.000 review.
+Loss validation của RNN tăng sau epoch 6 và của LSTM tăng sau epoch 5 trong khi
+loss train tiếp tục giảm, cho thấy dấu hiệu quá khớp. Các số liệu chi tiết và biểu
+đồ được lưu trong `outputs/results.csv`, `outputs/history.json` và
+`outputs/comparison.png`.
 
 ## Tài liệu
 
